@@ -22,7 +22,7 @@ def init_db():
         conn.executescript(f.read())
     conn.commit()
     conn.close()
-    print("✅ Datenbank initialisiert")
+    print(" Datenbank initialisiert")
 
 # ── Données de test / Testdaten ───────────────────────────────────────────
 def seed_data():
@@ -110,7 +110,7 @@ def seed_data():
 
     conn.commit()
     conn.close()
-    print("✅ Testdaten eingefügt")
+    print(" Testdaten eingefügt")
 
 # ── 10 Requêtes analytiques / 10 Analytische Abfragen ────────────────────
 def run_queries():
@@ -118,11 +118,11 @@ def run_queries():
     cur = conn.cursor()
 
     print("\n" + "="*60)
-    print("📊 ANALYTISCHE SQL-ABFRAGEN")
+    print(" ANALYTISCHE SQL-ABFRAGEN")
     print("="*60)
 
     # Q1 — CA total par produit / Umsatz pro Produkt
-    print("\n📌 Q1 — Umsatz pro Produkt (absteigend)")
+    print("\n Q1 — Umsatz pro Produkt (absteigend)")
     cur.execute("""
         SELECT p.name,
                SUM(bp.menge * bp.einzelpreis) AS umsatz
@@ -134,7 +134,7 @@ def run_queries():
     for r in cur.fetchall(): print(f"   {r['name']:<20} {r['umsatz']:>10.2f} €")
 
     # Q2 — Nombre de commandes par client / Bestellungen pro Kunde
-    print("\n📌 Q2 — Bestellungen pro Kunde")
+    print("\n Q2 — Bestellungen pro Kunde")
     cur.execute("""
         SELECT k.vorname || ' ' || k.nachname AS kunde,
                COUNT(b.bestell_id) AS anzahl
@@ -146,7 +146,7 @@ def run_queries():
     for r in cur.fetchall(): print(f"   {r['kunde']:<22} {r['anzahl']} Bestellung(en)")
 
     # Q3 — Produits avec note moyenne / Durchschnittsbewertung
-    print("\n📌 Q3 — Durchschnittsbewertung pro Produkt")
+    print("\n Q3 — Durchschnittsbewertung pro Produkt")
     cur.execute("""
         SELECT p.name,
                ROUND(AVG(bw.sterne), 1) AS bewertung,
@@ -157,10 +157,10 @@ def run_queries():
         ORDER BY bewertung DESC
     """)
     for r in cur.fetchall():
-        print(f"   {r['name']:<20} ⭐ {r['bewertung']} ({r['anzahl_bewertungen']} Bewertung(en))")
+        print(f"   {r['name']:<20}  {r['bewertung']} ({r['anzahl_bewertungen']} Bewertung(en))")
 
     # Q4 — CA total par catégorie / Umsatz nach Kategorie
-    print("\n📌 Q4 — Umsatz nach Kategorie")
+    print("\n Q4 — Umsatz nach Kategorie")
     cur.execute("""
         SELECT k.bezeichnung AS kategorie,
                SUM(bp.menge * bp.einzelpreis) AS umsatz
@@ -173,7 +173,7 @@ def run_queries():
     for r in cur.fetchall(): print(f"   {r['kategorie']:<15} {r['umsatz']:>10.2f} €")
 
     # Q5 — Commandes livrées / Gelieferte Bestellungen
-    print("\n📌 Q5 — Gelieferte Bestellungen")
+    print("\n Q5 — Gelieferte Bestellungen")
     cur.execute("""
         SELECT b.bestell_id,
                k.vorname || ' ' || k.nachname AS kunde,
@@ -189,7 +189,7 @@ def run_queries():
         print(f"   #{r['bestell_id']} {r['kunde']:<20} {r['bestell_datum']}  {r['betrag']:.2f} €")
 
     # Q6 — Produits jamais commandés / Nie bestellte Produkte
-    print("\n📌 Q6 — Nie bestellte Produkte")
+    print("\n Q6 — Nie bestellte Produkte")
     cur.execute("""
         SELECT name FROM Produkte
         WHERE produkt_id NOT IN (SELECT DISTINCT produkt_id FROM Bestellpositionen)
@@ -198,7 +198,7 @@ def run_queries():
     print(f"   {[r['name'] for r in rows] if rows else 'Alle Produkte wurden bestellt'}")
 
     # Q7 — Panier moyen par méthode de paiement / Durchschnittsbetrag pro Zahlungsmethode
-    print("\n📌 Q7 — Durchschnittlicher Betrag pro Zahlungsmethode")
+    print("\n Q7 — Durchschnittlicher Betrag pro Zahlungsmethode")
     cur.execute("""
         SELECT methode,
                ROUND(AVG(betrag), 2) AS avg_betrag,
@@ -210,7 +210,7 @@ def run_queries():
         print(f"   {r['methode']:<15} Ø {r['avg_betrag']:>8.2f} €  ({r['anzahl']} Zahlung(en))")
 
     # Q8 — Top client / Top-Kunde nach Gesamtumsatz
-    print("\n📌 Q8 — Top-Kunden nach Gesamtumsatz")
+    print("\n Q8 — Top-Kunden nach Gesamtumsatz")
     cur.execute("""
         SELECT k.vorname || ' ' || k.nachname AS kunde,
                SUM(z.betrag) AS gesamt
@@ -225,7 +225,7 @@ def run_queries():
         print(f"   #{i} {r['kunde']:<22} {r['gesamt']:.2f} €")
 
     # Q9 — Produits en stock faible / Produkte mit niedrigem Lagerbestand
-    print("\n📌 Q9 — Produkte mit niedrigem Lagerbestand (< 70)")
+    print("\n Q9 — Produkte mit niedrigem Lagerbestand (< 70)")
     cur.execute("""
         SELECT name, lagerbestand
         FROM Produkte
@@ -235,7 +235,7 @@ def run_queries():
     for r in cur.fetchall(): print(f"   {r['name']:<20} {r['lagerbestand']} Stück")
 
     # Q10 — Sous-requête : clients ayant dépensé plus que la moyenne
-    print("\n📌 Q10 — Kunden mit überdurchschnittlichem Umsatz (Subquery)")
+    print("\n Q10 — Kunden mit überdurchschnittlichem Umsatz (Subquery)")
     cur.execute("""
         SELECT k.vorname || ' ' || k.nachname AS kunde,
                SUM(z.betrag) AS gesamt
@@ -269,20 +269,20 @@ def crud_demo():
         "INSERT INTO Kunden(vorname,nachname,email,land) VALUES(?,?,?,?)",
         ("Test","Kunde","test@example.com","Österreich"))
     new_id = cur.lastrowid
-    print(f"\n✅ CREATE — Neuer Kunde eingefügt (ID={new_id})")
+    print(f"\n CREATE — Neuer Kunde eingefügt (ID={new_id})")
 
     # READ
     cur.execute("SELECT * FROM Kunden WHERE kunden_id=?", (new_id,))
     row = cur.fetchone()
-    print(f"✅ READ   — {row['vorname']} {row['nachname']} / {row['email']}")
+    print(f" READ   — {row['vorname']} {row['nachname']} / {row['email']}")
 
     # UPDATE
     cur.execute("UPDATE Kunden SET land=? WHERE kunden_id=?", ("Schweiz", new_id))
-    print(f"✅ UPDATE — Land auf 'Schweiz' geändert")
+    print(f" UPDATE — Land auf 'Schweiz' geändert")
 
     # DELETE
     cur.execute("DELETE FROM Kunden WHERE kunden_id=?", (new_id,))
-    print(f"✅ DELETE — Kunde ID={new_id} gelöscht")
+    print(f" DELETE — Kunde ID={new_id} gelöscht")
 
     conn.commit()
     conn.close()
@@ -293,4 +293,4 @@ if __name__ == "__main__":
     seed_data()
     run_queries()
     crud_demo()
-    print("\n🎉 Projekt abgeschlossen!")
+    print("\n Projekt abgeschlossen!")
